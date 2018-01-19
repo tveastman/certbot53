@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+
+"""
+Upload all live letsencrypt certificates to Hashicorp Vault.
+
+Depends on the environment variables:
+
+    VAULT_ADDR - location of your vault
+    VAULT_TOKEN - authn token
+    VAULT_CERT_PATH - where you want to upload your certificates to
+
+    CERTS_DIR - where your LE certs live
+"""
+
+import os
+import glob
+import hvac
+
+
+def read_file(filename):
+    with open(filename) as f:
+        return f.read()
+
+
+VAULT_ADDR = os.environ['VAULT_ADDR']
+VAULT_TOKEN = os.environ['VAULT_TOKEN']
+VAULT_CERT_PATH = os.environ['VAULT_CERT_PATH']
+CERTS_DIR = os.environ.get('CERTS_DIR', '/etc/letsencrypt/live/')
+
+
+client = hvac.Client(
+    url=VAULT_ADDR,
+    token=VAULT_TOKEN
+)
+
+
+for directory in glob.glob(os.path.join(CERTS_DIR, '*')):
+    head, tail = os.path.split(directory)
+    dest = os.path.join(VAULT_CERT_PATH, tail)
+    print(f'Uploading {tail} to {VAULT_ADDR}{dest}')
+    payload = {
+        'cert.pem': read_file(os.path.join(directory, 'cert.pem')),
+        'chain.pem': read_file(os.path.join(directory, 'chain.pem')),
+        'fullchain.pem': read_file(os.path.join(directory, 'fullchain.pem')),
+        'privkey.pem': read_file(os.path.join(directory, 'privkey.pem')),
+    }
+    client.write(dest, **payload)

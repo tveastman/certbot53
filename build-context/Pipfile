@@ -1,0 +1,21 @@
+[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+certbot = "==0.20.0"
+"certbot-dns-route53" = "==0.20.0"
+hvac = "==0.3.0"
+
+
+[dev-packages]
+
+
+
+[requires]
+
+python_version = "3"
