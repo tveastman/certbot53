@@ -26,5 +26,7 @@ docker run --rm \
   -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
   -e VAULT_ADDR=$VAULT_ADDR \
   -e VAULT_TOKEN=$VAULT_TOKEN \
+  -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
+  -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
   --mount source=certbot53,target=/certbot53 \
   ${IMAGE} $@
